@@ -1,6 +1,6 @@
-# Suburb Cultural Research Automation
+# Suburb Research Memes
 
-Automated research system for Sydney suburb cultural vibes and stereotypes, designed to run independently on a gcloud VM.
+Automated research system for Sydney suburb cultural vibes and stereotypes, designed to run independently on a gcloud VM. Output is formatted for creating funny Instagram scripts (400 words each).
 
 ## Overview
 
