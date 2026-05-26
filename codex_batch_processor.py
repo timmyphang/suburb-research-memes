@@ -16,7 +16,7 @@ OUTPUT_DIR = Path("/home/tim/suburb_research_output")
 PROMPTS_FILE = OUTPUT_DIR / "suburb_research_prompts.json"
 RESULTS_FILE = OUTPUT_DIR / "all_suburb_research.json"
 STATUS_FILE = OUTPUT_DIR / "processing_status.json"
-MAX_WORKERS = 20  # Adjust based on VM capacity and Codex's parallelism
+MAX_WORKERS = 2  # Reduced for e2-micro VM (1 vCPU, limited RAM)
 
 def process_prompt_with_codex(prompt_data):
     """
