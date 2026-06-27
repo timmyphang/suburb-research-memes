@@ -150,8 +150,7 @@ def synthesise(suburb: str, state: str, searches: dict[str, dict]) -> dict | Non
             {"role": "system", "content": SYNTHESIS_SYSTEM},
             {"role": "user", "content": user_msg},
         ],
-        "temperature": 0.8,
-        "max_tokens": 2000,
+        "max_completion_tokens": 16000,
     }
 
     headers = {"api-key": api_key, "Content-Type": "application/json"}
