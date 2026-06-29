@@ -2,7 +2,8 @@
 # Watches for main batch to finish, then runs VIC batch + sync
 set -e
 
-export AZURE_OPENAI_API_KEY="$AZURE_OPENAI_API_KEY"
+ENV_FILE="${SUBURB_ENV_FILE:-$HOME/.suburb_env}"
+[ -f "$ENV_FILE" ] && set -a && . "$ENV_FILE" && set +a
 
 OUTPUT_DIR="$HOME/suburb_research_output"
 GDRIVE_PATH="gdrive:suburb-research-memes-output"

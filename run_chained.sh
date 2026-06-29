@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-export AZURE_OPENAI_API_KEY="$AZURE_OPENAI_API_KEY"
+ENV_FILE="${SUBURB_ENV_FILE:-$HOME/.suburb_env}"
+[ -f "$ENV_FILE" ] && set -a && . "$ENV_FILE" && set +a
 
 REPO_DIR="$HOME/suburb-research-memes"
 OUTPUT_DIR="$HOME/suburb_research_output"

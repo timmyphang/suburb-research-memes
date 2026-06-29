@@ -24,6 +24,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Secrets
+.suburb_env
+
 # Temporary
 *.tmp
 *.temp
