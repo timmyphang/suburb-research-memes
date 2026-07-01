@@ -34,14 +34,17 @@ def generate_suburb_prompt(suburb: str, state: str) -> str:
     Returns:
         Full prompt string
     """
-    if state == "QLD":
-        location = f"{suburb}, QLD Australia"
-        reddit_sub = "/r/brisbane"
-        state_full = "Queensland"
-    else:
-        location = f"{suburb}, Sydney NSW Australia"
-        reddit_sub = "/r/sydney"
-        state_full = "New South Wales"
+    STATE_CONFIG = {
+        "QLD": ("QLD Australia",       "/r/brisbane",  "Queensland"),
+        "VIC": ("VIC Australia",       "/r/melbourne", "Victoria"),
+        "SA":  ("SA Australia",        "/r/Adelaide",  "South Australia"),
+        "WA":  ("WA Australia",        "/r/perth",     "Western Australia"),
+        "NSW": ("Sydney NSW Australia", "/r/sydney",   "New South Wales"),
+    }
+    loc_suffix, reddit_sub, state_full = STATE_CONFIG.get(
+        state, ("Australia", "/r/australia", state)
+    )
+    location = f"{suburb}, {loc_suffix}"
 
     return f"""Research the cultural vibe and local stereotypes of {location}. Extract lighthearted, satirical data to help new migrants understand the local humor. The information gathered must be detailed and comprehensive enough to later be adapted into a 400-word funny Instagram post script about the suburb.
 
@@ -99,12 +102,33 @@ def load_suburbs(nsw_path: str, qld_path: str) -> list[dict]:
     return entries
 
 
+
+def load_suburbs_from_json(path: str, state: str) -> list[dict]:
+    """Load suburbs from a flat JSON list (e.g. vic_full_suburbs.json).
+
+    Args:
+        path:  Path to JSON file containing a list of suburb name strings
+        state: State code to tag each entry with (e.g. 'VIC', 'SA', 'WA')
+
+    Returns:
+        List of {'suburb': str, 'state': str} dicts
+    """
+    import json as _json
+    suburbs = _json.load(open(path))
+    entries = [{"suburb": s.strip().title(), "state": state} for s in suburbs if s.strip()]
+    print(f"Loaded {len(entries)} {state} suburbs from: {path}")
+    return entries
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate suburb research prompts from NSW+QLD school CSVs"
     )
     parser.add_argument("--nsw", default=NSW_CSV_DEFAULT, help="Path to NSW schools CSV")
     parser.add_argument("--qld", default=QLD_CSV_DEFAULT, help="Path to QLD schools CSV")
+    parser.add_argument(
+        "--json", metavar="STATE:PATH", action="append", default=[],
+        help="Add suburbs from a JSON list file with explicit state, e.g. VIC:/home/tim/vic_full_suburbs.json"
+    )
     parser.add_argument(
         "--output-dir", default=str(OUTPUT_DIR_DEFAULT),
         help="Output directory for prompts and status files",
@@ -120,6 +144,14 @@ def main():
 
     # Load suburbs
     suburbs = load_suburbs(args.nsw, args.qld)
+
+    # Load any extra state-specific JSON suburb lists
+    for spec in args.json:
+        if ":" not in spec:
+            print(f"WARNING: --json value '{spec}' must be STATE:PATH — skipping")
+            continue
+        state_code, json_path = spec.split(":", 1)
+        suburbs.extend(load_suburbs_from_json(json_path, state_code.upper()))
 
     # Generate prompts
     prompts = []
